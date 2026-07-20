@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROLL COLOR DICE - MINI 1/4</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial Rounded MT Bold', sans-serif; }
+        
+        body { 
+            background-color: #0b0f19; 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 6px; 
+            color: white; 
+        }
+
+        /* Khung siêu nhỏ gọn: Chiếm khoảng 1/4 màn hình điện thoại */
+        .game-card {
+            width: 100%;
+            max-width: 210px; /* Thu nhỏ chiều rộng tối đa */
+            background: #131a26;
+            border: 1.5px solid #2d3748;
+            border-radius: 10px;
+            padding: 10px 8px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 13px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        /* Thanh menu trang trí mini */
+        .select-bar {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 8px;
+        }
+
+        .select-box {
+            flex: 1;
+            background: #ffffff;
+            color: #000;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-size: 8px;
+            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Grid 4 ô xúc xắc mini */
+        .dice-grid {
+            display: grid;
+            grid-template-cols: repeat(4, 1fr);
+            gap: 4px;
+            margin: 8px 0;
+        }
+
+        .dice {
+            background-color: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px;
+            aspect-ratio: 1/1;
+        }
+
+        .dice-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dice-dot {
+            width: 5px;
+            height: 5px;
+            background-color: #ffffff;
+            border-radius: 50%;
+        }
+
+        /* Nút RANDOM */
+        .btn-roll {
+            width: 100%;
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 7px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-top: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-roll:active { transform: scale(0.97); }
+
+        /* Khung hiển thị 7 màu sắc quay ra */
+        .palette-box {
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px dashed #2d3748;
+            text-align: center;
+        }
+
+        .palette-title {
+            font-size: 8px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .palette-list {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid #ffffff;
+        }
+
+        /* Màn hình Admin & Login */
+        .hidden { display: none !important; }
+
+        .login-box {
+            background: #1a202c;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            padding: 8px;
+            margin-top: 6px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #4a5568;
+            background: #0d1117;
+            color: white;
+            text-align: center;
+            font-size: 10px;
+            margin-bottom: 5px;
+        }
+
+        .btn-admin {
+            width: 100%;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .admin-status {
+            font-size: 8px;
+            text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+            background: #2d3748;
+            color: #cbd5e0;
+            margin-top: 6px;
+        }
+
+        .admin-status.active {
+            background: #064e3b;
+            color: #34d399;
+            font-weight: bold;
+        }
+
+        .footer-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 4px;
+            border-top: 1px solid #1e293b;
+            font-size: 8px;
+            color: #64748b;
+        }
+
+        .btn-adm-toggle {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-card">
+        <!-- HEADER -->
+        <div class="header-title">ROLL COLOR DICE</div>
+
+        <!-- SELECT BAR MINI -->
+        <div class="select-bar">
+            <div class="select-box"><span>4 DICE</span><span>▼</span></div>
+            <div class="select-box"><span>COLOR</span><span>▼</span></div>
+            <div class="select-box"><span>B&W</span><span>▼</span></div>
+        </div>
+
+        <!-- MÀN HÌNH NGƯỜI THƯỜNG QUAY SỐ -->
+        <div id="screen-user">
+            <!-- 4 Ô XÚC XẮC NẰM NGANG -->
+            <div class="dice-grid" id="dice-container">
+                <div class="dice"><div class="dice-inner" style="background-color: #334155;"><div class="dice-dot"></div></div></div>
+                <div class="dice"><div class="dice-inner" style="background-color: #334155;"><div class="dice-dot"></div></div></div>
+                <div class="dice"><div class="dice-inner" style="background-color: #334155;"><div class="dice-dot"></div></div></div>
+                <div class="dice"><div class="dice-inner" style="background-color: #334155;"><div class="dice-dot"></div></div></div>
+            </div>
+
+            <!-- NÚT RANDOM -->
+            <button class="btn-roll" onclick="rollDice()">RANDOM</button>
+
+            <!-- BÊN DƯỚI RANDOM: HIỂN THỊ 7 MÀU SẮC CÓ THỂ QUAY RA -->
+            <div class="palette-box">
+                <div class="palette-title">7 màu sắc ngẫu nhiên quay ra:</div>
+                <div class="palette-list" id="palette-list">
+                    <!-- Danh sách 7 chấm màu sẽ hiển thị ở đây bằng JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MÀN HÌNH ADMIN GÀI MÀU -->
+        <div id="screen-admin" class="hidden">
+            <p style="text-align: center; font-size: 8px; color: #cbd5e0; margin-bottom: 4px;">Chạm vào từng ô để đổi màu (cho phép trùng):</p>
+            
+            <div class="dice-grid">
+                <div class="dice" onclick="cycleColor(0)"><div class="dice-inner" id="as-0" style="background-color: #ef4444;"><div class="dice-dot"></div></div></div>
+                <div class="dice" onclick="cycleColor(1)"><div class="dice-inner" id="as-1" style="background-color: #ef4444;"><div class="dice-dot"></div></div></div>
+                <div class="dice" onclick="cycleColor(2)"><div class="dice-inner" id="as-2" style="background-color: #ef4444;"><div class="dice-dot"></div></div></div>
+                <div class="dice" onclick="cycleColor(3)"><div class="dice-inner" id="as-3" style="background-color: #ef4444;"><div class="dice-dot"></div></div></div>
+            </div>
+
+            <div id="admin-status" class="admin-status">Chưa gài màu. Lượt quay sẽ NGẪU NHIÊN.</div>
+
+            <button class="btn-roll" style="background: #2563eb;" onclick="saveGai()">LƯU VÀ CÀI MÀU</button>
+            <button class="btn-roll" style="background: #d97706; margin-top: 4px;" onclick="clearGai()">XÓA MÀU CÀI</button>
+            <button class="btn-roll" style="background: #475569; margin-top: 4px;" onclick="exitAdmin()">THOÁT ADMIN</button>
+        </div>
+
+        <!-- FOOTER & NÚT ADMIN -->
+        <div class="footer-bar">
+            <button class="btn-adm-toggle" onclick="toggleAdminModal()">⚙️ Admin</button>
+            <span>v5.2 (Siêu nhỏ 1/4)</span>
+        </div>
+
+        <!-- FORM ĐĂNG NHẬP ADMIN -->
+        <div id="admin-modal" class="login-box hidden">
+            <input id="pwd-input" class="input-field" type="password" placeholder="Mật khẩu Admin (24)">
+            <button class="btn-admin" onclick="checkPwd()">VÀO CÀI MÀU</button>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách 7 màu chuẩn
+        const COLORS = [
+            { id: 'red', name: 'Đỏ', hex: '#ef4444' },
+            { id: 'yellow', name: 'Vàng', hex: '#eab308' },
+            { id: 'green', name: 'Lá', hex: '#22c55e' },
+            { id: 'blue', name: 'Dương', hex: '#3b82f6' },
+            { id: 'purple', name: 'Tím', hex: '#a855f7' },
+            { id: 'pink', name: 'Hồng', hex: '#ec4899' },
+            { id: 'orange', name: 'Cam', hex: '#f97316' }
+        ];
+
+        let slots = ['red', 'red', 'red', 'red'];
+
+        // Tự động vẽ 7 chấm màu sắc dưới chữ Random
+        function renderPaletteList() {
+            const container = document.getElementById('palette-list');
+            container.innerHTML = '';
+            COLORS.forEach(c => {
+                const dot = document.createElement('div');
+                dot.className = 'color-dot';
+                dot.style.backgroundColor = c.hex;
+                dot.title = c.name;
+                container.appendChild(dot);
+            });
+        }
+        renderPaletteList();
+
+        function toggleAdminModal() {
+            document.getElementById('admin-modal').classList.toggle('hidden');
+        }
+
+        function checkPwd() {
+            const pwd = document.getElementById('pwd-input').value;
+            if (pwd === '24') {
+                document.getElementById('admin-modal').classList.add('hidden');
+                document.getElementById('screen-user').classList.add('hidden');
+                document.getElementById('screen-admin').classList.remove('hidden');
+                
+                const saved = localStorage.getItem('gai_mau');
+                if (saved) {
+                    slots = JSON.parse(saved);
+                }
+                renderAdminSlots();
+                updateAdminStatus();
+            } else {
+                alert('Mật khẩu không đúng!');
+            }
+        }
+
+        function exitAdmin() {
+            document.getElementById('screen-admin').classList.add('hidden');
+            document.getElementById('screen-user').classList.remove('hidden');
+        }
+
+        function cycleColor(idx) {
+            let curIdx = COLORS.findIndex(c => c.id === slots[idx]);
+            slots[idx] = COLORS[(curIdx + 1) % COLORS.length].id;
+            renderAdminSlots();
+        }
+
+        function renderAdminSlots() {
+            slots.forEach((id, i) => {
+                let c = COLORS.find(x => x.id === id);
+                document.getElementById(`as-${i}`).style.backgroundColor = c.hex;
+            });
+        }
+
+        function saveGai() {
+            localStorage.setItem('gai_mau', JSON.stringify(slots));
+            alert('Đã gài màu thành công!');
+            updateAdminStatus();
+            exitAdmin();
+        }
+
+        function clearGai() {
+            localStorage.removeItem('gai_mau');
+            slots = ['red', 'red', 'red', 'red'];
+            renderAdminSlots();
+            alert('Đã xóa màu cài! Người thường sẽ quay ra NGẪU NHIÊN.');
+            updateAdminStatus();
+        }
+
+        function updateAdminStatus() {
+            const statusEl = document.getElementById('admin-status');
+            const saved = localStorage.getItem('gai_mau');
+            if (saved) {
+                statusEl.className = "admin-status active";
+                statusEl.innerText = "Đã gài màu! Lượt quay tới sẽ ra đúng bộ này.";
+            } else {
+                statusEl.className = "admin-status";
+                statusEl.innerText = "Chưa gài màu. Lượt quay sẽ NGẪU NHIÊN.";
+            }
+        }
+
+        // Hàm RANDOM chuẩn logic
+        function rollDice() {
+            const container = document.getElementById('dice-container');
+            const innerBoxes = container.querySelectorAll('.dice-inner');
+            
+            let finalColors = [];
+            const saved = localStorage.getItem('gai_mau');
+
+            if (saved) {
+                // Nếu Admin gài màu: Ra bộ màu đã cài
+                const list = JSON.parse(saved);
+                finalColors = list.map(id => COLORS.find(c => c.id === id));
+                localStorage.removeItem('gai_mau'); // Tự xóa sau khi ra để lượt sau quay ngẫu nhiên
+            } else {
+                // Nếu Admin KHÔNG gài: Ra hoàn toàn ngẫu nhiên trong 7 màu
+                for (let i = 0; i < 4; i++) {
+                    finalColors.push(COLORS[Math.floor(Math.random() * COLORS.length)]);
+                }
+            }
+
+            // Đổi màu 4 ô xúc xắc
+            finalColors.forEach((c, i) => {
+                innerBoxes[i].style.backgroundColor = c.hex;
+            });
+        }
+    </script>
+</body>
+</html>
